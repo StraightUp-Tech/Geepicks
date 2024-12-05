@@ -1,0 +1,74 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+
+# Function to make a selection
+def pick_option():
+    options = options_entry.get().strip()
+    if not options:
+        messagebox.showerror("Error", "Please enter at least two options separated by commas.")
+        return
+    
+    options_list = [opt.strip() for opt in options.split(",") if opt.strip()]
+    if len(options_list) < 2:
+        messagebox.showerror("Error", "Please enter at least two valid options.")
+        return
+
+    selected_option = random.choice(options_list)
+    history.append(selected_option)
+    save_history(selected_option)
+    result_label.config(text=f"Selected Option: {selected_option}")
+
+# Function to save history to a file
+def save_history(selection):
+    with open("geepicks_history.txt", "a") as file:
+        file.write(f"{selection}\n")
+
+# Function to view history
+def view_history():
+    if not history:
+        messagebox.showinfo("History", "No selections made yet!")
+        return
+    
+    history_window = tk.Toplevel(window)
+    history_window.title("Selection History")
+    history_window.geometry("300x300")
+
+    tk.Label(history_window, text="Selection History", font=("Arial", 14, "bold")).pack(pady=10)
+
+    history_text = tk.Text(history_window, wrap=tk.WORD, width=40, height=15)
+    history_text.insert(tk.END, "\n".join(history))
+    history_text.config(state=tk.DISABLED)
+    history_text.pack(pady=10)
+
+# Initialize the history list
+history = []
+
+# Main window setup
+window = tk.Tk()
+window.title("Geepicks")
+window.geometry("400x300")
+
+# Title
+title_label = tk.Label(window, text="Geepicks: Decision Maker", font=("Arial", 16, "bold"))
+title_label.pack(pady=10)
+
+# Options entry
+tk.Label(window, text="Enter options separated by commas:", font=("Arial", 12)).pack(pady=5)
+options_entry = tk.Entry(window, width=50)
+options_entry.pack(pady=5)
+
+# Pick button
+pick_button = tk.Button(window, text="Pick an Option", font=("Arial", 12), command=pick_option)
+pick_button.pack(pady=10)
+
+# Result label
+result_label = tk.Label(window, text="Selected Option: None", font=("Arial", 12), fg="green")
+result_label.pack(pady=10)
+
+# History button
+history_button = tk.Button(window, text="View History", font=("Arial", 12), command=view_history)
+history_button.pack(pady=5)
+
+# Run the Tkinter event loop
+window.mainloop()
